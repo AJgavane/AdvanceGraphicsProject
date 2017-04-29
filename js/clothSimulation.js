@@ -289,8 +289,8 @@ function createObstacles() {
 	var loader = new THREE.JSONLoader(); 
 	
 	loader.load( 'models/monster.js', function ( geometry ) {	
-		// var material = materials[ 0 ];
-		monster.mesh = new THREE.Mesh( geometry,  new THREE.MeshBasicMaterial({ color: Colors.brown,  wireframe:false }) );
+		var material = materials[ 0 ];
+		monster.mesh = new THREE.Mesh( geometry,  material ); //new THREE.MeshBasicMaterial({ color: Colors.brown,  wireframe:false }) );
 		monster.mesh.position.set( 200, 0, 0 );
 		monster.mesh.rotation.y = Math.PI/2	;
 		var s = 0.15;
