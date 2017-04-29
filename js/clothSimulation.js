@@ -284,44 +284,44 @@ function createObstacles() {
 	console.log(obstacles[1]);
 	scene.add(obstacles[1].mesh);
 	// model
-	var loader = new THREE.JSONLoader();
-				loader.load( 'models/monster.js', function ( geometry, materials ) {
+	var loader = new THREE.JSONLoader(); 
+	loader.load( 'models/monster.js', function ( geometry, materials ) {
 
-					// adjust color a bit
+		// adjust color a bit
 
-					var material = materials[ 0 ];
-					material.morphTargets = true;
-					material.color.setHex( 0xffaaaa );
+		var material = materials[ 0 ];
+		material.morphTargets = true;
+		material.color.setHex( 0xffaaaa );
 
-					for ( var i = 0; i < 729; i ++ ) {
+		for ( var i = 0; i < 729; i ++ ) {
 
-						mesh = new THREE.Mesh( geometry, materials );
+			mesh = new THREE.Mesh( geometry, materials );
 
-						// random placement in a grid
+			// random placement in a grid
 
-						var x = ( ( i % 27 )  - 13.5 ) * 2 + THREE.Math.randFloatSpread( 1 );
-						var z = ( Math.floor( i / 27 ) - 13.5 ) * 2 + THREE.Math.randFloatSpread( 1 );
+			var x = ( ( i % 27 )  - 13.5 ) * 2 + THREE.Math.randFloatSpread( 1 );
+			var z = ( Math.floor( i / 27 ) - 13.5 ) * 2 + THREE.Math.randFloatSpread( 1 );
 
-						mesh.position.set( x, 0, z );
+			mesh.position.set( x, 0, z );
 
-						var s = THREE.Math.randFloat( 0.00075, 0.001 );
-						mesh.scale.set( s, s, s );
+			var s = THREE.Math.randFloat( 0.00075, 0.001 );
+			mesh.scale.set( s, s, s );
 
-						mesh.rotation.y = THREE.Math.randFloat( -0.25, 0.25 );
+			mesh.rotation.y = THREE.Math.randFloat( -0.25, 0.25 );
 
-						mesh.matrixAutoUpdate = false;
-						mesh.updateMatrix();
+			mesh.matrixAutoUpdate = false;
+			mesh.updateMatrix();
 
-						scene.add( mesh );
+			scene.add( mesh );
 
-						mixer.clipAction( geometry.animations[ 0 ], mesh )
-								.setDuration( 1 )			// one second
-								.startAt( - Math.random() )	// random phase (already running)
-								.play();					// let's go
+			mixer.clipAction( geometry.animations[ 0 ], mesh )
+					.setDuration( 1 )			// one second
+					.startAt( - Math.random() )	// random phase (already running)
+					.play();					// let's go
 
-					}
+		}
 
-				} );
+	} );
 
 	//
 	var FLOOR = -10;
