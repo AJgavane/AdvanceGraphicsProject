@@ -285,8 +285,8 @@ function createObstacles() {
 	scene.add(obstacles[1].mesh);
 	// model
 	var mtlLoader = new THREE.MTLLoader();
-	mtlLoader.setBaseUrl('http://ajgavane.github.io/Computer_Graphics/');
-	mtlLoader.setPath('http://ajgavane.github.io/Computer_Graphics/');
+	mtlLoader.setBaseUrl('models/');
+	mtlLoader.setPath('models/');
 	mtlLoader.load('female-croupier-2013-03-26.mtl', function (materials) {
 		materials.preload();
 		materials.materials.default.map.magFilter = THREE.NearestFilter;
@@ -294,7 +294,7 @@ function createObstacles() {
 
 		var objLoader = new THREE.OBJLoader();
 		objLoader.setMaterials(materials);
-		objLoader.setPath('http://ajgavane.github.io/Computer_Graphics/');
+		objLoader.setPath('models/');
 		objLoader.load('female-croupier-2013-03-26.obj', function (object) {
 			scene.add(object);
 		});
