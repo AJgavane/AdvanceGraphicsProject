@@ -287,12 +287,11 @@ function createObstacles() {
 	var loader = new THREE.JSONLoader(); 
 	loader.load( 'models/monster.js', function ( geometry, materials ) {
 	
-			var material = materials[ 0 ];
-			var object = new THREE.Mesh( geometry, material );
+		var material = materials[ 0 ];
+		var object = new THREE.Mesh( geometry, material );
 
-			scene.add( object );
+		scene.add( object );
 
-		}
 
 	} );
 
