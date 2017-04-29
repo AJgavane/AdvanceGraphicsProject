@@ -314,11 +314,6 @@ function createObstacles() {
 
 			scene.add( mesh );
 
-			mixer.clipAction( geometry.animations[ 0 ], mesh )
-					.setDuration( 1 )			// one second
-					.startAt( - Math.random() )	// random phase (already running)
-					.play();					// let's go
-
 		}
 
 	} );
