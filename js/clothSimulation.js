@@ -246,7 +246,8 @@ function handleKey(event) {
 Triangle = function(val) {
 	var geometry = new THREE.Geometry();
 	geometry.vertices= [new THREE.Vector3(-100, 0,0), 
-	new THREE.Vector3(100, 0, 0), new THREE.Vector3(0, 100,0)]; 
+						new THREE.Vector3(100, 0, 0), 
+						new THREE.Vector3(0, 100,0)]; 
 	geometry.faces = [new THREE.Face3(1,0,2)];
 	console.log(geometry.vertices);
 	console.log(geometry.faces);
@@ -269,6 +270,7 @@ function createTriangle() {
 }
 
 var count = 0;
+var monster = new THREE.Geometry();
 function createObstacles() {
 	// triangle
 	var ob = new Triangle(0x505050);
@@ -285,34 +287,38 @@ function createObstacles() {
 	scene.add(obstacles[1].mesh);
 	// model
 	var loader = new THREE.JSONLoader(); 
-	loader.load( 'models/monster.js', function ( geometry, materials ) {
 	
-		var material = materials[ 0 ];
-		var object = new THREE.Mesh( geometry, material );
-
-		scene.add( object );
-
+	loader.load( 'models/monster.js', function ( geometry ) {	
+		// var material = materials[ 0 ];
+		monster.mesh = new THREE.Mesh( geometry,  new THREE.MeshBasicMaterial({ color: Colors.brown,  wireframe:false }) );
+		monster.mesh.position.set( 200, 0, 0 );
+		monster.mesh.rotation.y = Math.PI/2	;
+		var s = 0.15;
+		
+		monster.mesh.scale.set( s, s, s );
+		scene.add( monster.mesh );
 
 	} );
-
+	console.log(monster);
+	obstacles.push(monster);
 	//
-	var FLOOR = -10;
-	var material_spheres = new THREE.MeshLambertMaterial( { color: 0xdddddd } ),
-		sphere = new THREE.SphereGeometry( 100, 16, 8 );
+	// var FLOOR = -10;
+	// var material_spheres = new THREE.MeshLambertMaterial( { color: 0xdddddd } ),
+	// 	sphere = new THREE.SphereGeometry( 100, 16, 8 );
 
-	for ( var i = 0; i < 10; i ++ ) {
+	// for ( var i = 0; i < 5; i ++ ) {
 
-		mesh = new THREE.Mesh( sphere, material_spheres );
+	// 	mesh = new THREE.Mesh( sphere, material_spheres );
 
-		mesh.position.x = 500 * ( Math.random() - 0.5 );
-		mesh.position.y = 300 * ( Math.random() - 0 ) + FLOOR;
-		mesh.position.z = 100 * ( Math.random() - 1 );
+	// 	mesh.position.x = 500 * ( Math.random() - 0.5 );
+	// 	mesh.position.y = 300 * ( Math.random() - 0 ) + FLOOR;
+	// 	mesh.position.z = 100 * ( Math.random() - 1 );
 
-		mesh.scale.x = mesh.scale.y = mesh.scale.z = 0.25 * ( Math.random() + 0.5 );
+	// 	mesh.scale.x = mesh.scale.y = mesh.scale.z = 0.25 * ( Math.random() + 0.5 );
 
-		scene.add( mesh );
+	// 	scene.add( mesh );
 
-	}
+	// }
 
 }
 
