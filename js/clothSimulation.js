@@ -286,33 +286,11 @@ function createObstacles() {
 	// model
 	var loader = new THREE.JSONLoader(); 
 	loader.load( 'models/monster.js', function ( geometry, materials ) {
+	
+			var material = materials[ 0 ];
+			var object = new THREE.Mesh( geometry, material );
 
-		// adjust color a bit
-
-		var material = materials[ 0 ];
-		material.morphTargets = true;
-		material.color.setHex( 0xffaaaa );
-
-		for ( var i = 0; i < 729; i ++ ) {
-
-			mesh = new THREE.Mesh( geometry, materials );
-
-			// random placement in a grid
-
-			var x = ( ( i % 27 )  - 13.5 ) * 2 + THREE.Math.randFloatSpread( 1 );
-			var z = ( Math.floor( i / 27 ) - 13.5 ) * 2 + THREE.Math.randFloatSpread( 1 );
-
-			mesh.position.set( 0, 0, 0 );
-
-			var s = THREE.Math.randFloat( 0.00075, 0.001 );
-			mesh.scale.set( s, s, s );
-
-			mesh.rotation.y = THREE.Math.randFloat( -0.25, 0.25 );
-
-			mesh.matrixAutoUpdate = false;
-			mesh.updateMatrix();
-
-			scene.add( mesh );
+			scene.add( object );
 
 		}
 
