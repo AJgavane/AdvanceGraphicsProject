@@ -302,7 +302,7 @@ function createObstacles() {
 			var x = ( ( i % 27 )  - 13.5 ) * 2 + THREE.Math.randFloatSpread( 1 );
 			var z = ( Math.floor( i / 27 ) - 13.5 ) * 2 + THREE.Math.randFloatSpread( 1 );
 
-			mesh.position.set( x, 0, z );
+			mesh.position.set( 0, 0, 0 );
 
 			var s = THREE.Math.randFloat( 0.00075, 0.001 );
 			mesh.scale.set( s, s, s );
