@@ -4,7 +4,7 @@ Triangle = function(val) {
 						new THREE.Vector3(100, 10, 0), 
 						new THREE.Vector3(0, 110,0)]; 
 	geometry.faces = [new THREE.Face3(1,0,2)];
-	this.mesh= new THREE.Mesh( geometry, new THREE.MeshBasicMaterial({ color: val,  wireframe:false }) );
+	this.mesh= new THREE.Mesh( geometry, new THREE.MeshBasicMaterial({ color: val,  wireframe:false , side: THREE.DoubleSide}) );
 	
 }
 
