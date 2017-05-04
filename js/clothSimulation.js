@@ -24,12 +24,15 @@ var ObstaclesColor = {
 	var sphere;
 	var ballPosition = new THREE.Vector3(0,-45,0);
 	var obstacles = [];
+	var obbs = [];
 	var showWireFrame = false;
 	var floor;
 	var triangle;
 	var pyramid;
 	var count = 0;
 	var monster = new THREE.Geometry();
+	var obbPyramid;
+	var showOBB = false;
 /**/
 
 function handleWindowResize() {
@@ -37,7 +40,7 @@ function handleWindowResize() {
 	WIDTH = window.innerWidth;
 	camera.asp = WIDTH/HEIGHT;
 	camera.updateProjectionMatrix();
-	renderer.setSize(WIDTH/HEIGHT);
+	renderer.setSize(WIDTH, HEIGHT);
 }
 
 window.addEventListener('load', init, false);
@@ -50,26 +53,20 @@ function init() {
 
 	// add objects
 	createPyramid();
-	// createTriangle();
-	createFloor(700,700);
+	createFloor(800,800);
 	createObstacles();
-	var callback = function() {var x = OBBFromTriangle(pyramid.mesh); console.log(x);}
-	setTimeout(callback, 2000);
-	// createBall();
-	// debugParticleClass();
-	console.log(ObstaclesColor);
-	debugTriangleClass();
-	
-	loop();
+	var callback = function() {
+		obbPyramid = OBBFromTriangle(pyramid.mesh); 
+		// addBBForObstacles();
+		loop();
+	}
+	setTimeout(callback, 1000);
 }
 
 function createScene() {
 	WIDTH = window.innerWidth;
 	HEIGHT = window.innerHeight;
-
 	scene = new THREE.Scene();
-	// scene.fog = new THREE.Fog(0xcce0ff, 500, 10000 );
-
 	// camera
 	asp = WIDTH/HEIGHT;
 	fov = 60;
@@ -86,7 +83,6 @@ function createScene() {
 	renderer.setPixelRatio(window.devicePixelRatio);
 	renderer.setSize(WIDTH, HEIGHT);
 	renderer.setClearColor(scene.fog.color);
-	// console.log(WIDTH + " " + HEIGHT)
 	renderer.shadowMap.enabled = true;
 	container  = document.getElementById('cloth');
 	container.appendChild(renderer.domElement);
@@ -95,16 +91,15 @@ function createScene() {
 	var controls = new THREE.OrbitControls(camera, renderer.domElement);
 	controls.maxPolarAngle = Math.PI/2;
 	document.addEventListener("keydown", handleKey, false);
-	
 }
 
 function createLights() {
-	// scene.add( new THREE.AmbientLight( 0x666666 ) );
+	scene.add( new THREE.AmbientLight( 0x666666 ) );
 	hemisphereLight = new THREE.HemisphereLight(0xaaaaaa, 0x000000, 0.9);
 	shadowLight = new THREE.DirectionalLight(0xffffff, 0.9);
 	shadowLight.castShadow = true;
+
 	shadowLight.position.set(400, 500, -500);
-	// shadowLight.castShadow = true;
 	shadowLight.shadow.camera.left = -400;
 	shadowLight.shadow.camera.right = 400;
 	shadowLight.shadow.camera.top = 400;
@@ -121,36 +116,30 @@ function createLights() {
 
 function loop() {
 	requestAnimationFrame(loop);
-	// sea.mesh.position.y = 150;
-	// sea.mesh.rotation.z += .005;
-	// triangle.mesh.rotation.x += 0.005;
 	render();
 }
 
 function render() {
-	addBBForObstacles();
+	if(showOBB == true)
+		addBBForObstacles();
 	for(var ob = 0; ob < obstacles.length; ob++){
-		// var collide = checkObstacleCollision(triangle, obstacles[ob]);
 		var collide = checkObstacleCollision(pyramid, obstacles[ob]);
-		// console.log(collide);
 		if(collide) {
-			console.log(ob);
 			obstacles[ob].mesh.material.color.setHex(Colors.red);
 		} else {
 			obstacles[ob].mesh.material.color.setHex(ObstaclesColor[ob]);
 		}
 		obstacles[ob].mesh.material.wireframe = showWireFrame;
 	}
-
 	renderer.render(scene, camera);
 }
 
 function checkObstacleCollision(pid, object){
-	update(pid);
-	update(object);
 	var p1 = pid.mesh.position;
 	var p2 = object.mesh.position;
-	// var t1 = pid.mesh.geometry.vertices;
+	update(pid);
+	update(object);
+	
 	var result = false;
 	var objGeom = object.mesh.geometry;
 	var pidGeom = pid.mesh.geometry;
@@ -174,131 +163,96 @@ function checkObstacleCollision(pid, object){
 }
 
 
-// function checkCollision(tri1, tri2) {
-// 	update(tri1);
-// 	update(tri2);
-// 	var p1 = tri1.mesh.position;
-// 	var p2 = tri2.mesh.position;
-// 	var t1 = tri1.mesh.geometry.vertices;
-// 	var t2 = tri2.mesh.geometry.vertices;
-// 	// console.log(t2);
-// 	var result =  triangle_triangle_overlap(t1[0], t1[1], t1[2], t2[0], t2[1], t2[2]);
-// 	// console.log(result);
-// 	reset(tri1, p1);
-// 	reset(tri2, p2);
-// 	return result;
-// }
-
-
 function update(triangle) {
 	triangle.mesh.updateMatrix();
 	triangle.mesh.geometry.applyMatrix(triangle.mesh.matrix);
 	triangle.mesh.matrix.identity();
+	triangle.mesh.geometry.verticesNeedUpdate = true;
 }
 
 function reset(tri, pos) {
-	tri.mesh.position.set(0,0,0);
-	tri.mesh.rotation.set(0,0,0);
+	// console.log(pos);
+	tri.mesh.position.set(0, 0, 0);
+	// tri.mesh.rotation.set(0,0,0);
 	tri.mesh.scale.set(1,1,1);
 }
 
 
-
-function createFloor(l,b) {
-	floor = new Floor(l,b);
-	floor.mesh.receiveShadow = true;
-	scene.add(floor.mesh);
-}
-
-function createTriangle() {
-	triangle = new Triangle(0x303030);
-	scene.add(triangle.mesh);
-	triangle.mesh.geometry.verticesNeedUpdate = true;
-}
-
-function createPyramid() {
-	pyramid = new Pyramid(0x303030);
-	pyramid.mesh.scale.set(70,70,70);
-	pyramid.mesh.position.y = 70;
-	console.log(pyramid.mesh);
-	scene.add(pyramid.mesh);
-}
-
 function createObstacles() {
-	// triangle
+	// Triangle
 	var ob = new Triangle(ObstaclesColor[0]);
 	ob.mesh.castShadow = true;
-	ob.mesh.position.x = -250;
-	ob.mesh.position.z = -250;
 	obstacles.push(ob);
 	scene.add(obstacles[count].mesh);
+	obstacles[count].mesh.position.set(-250,100,-200);
+	// obstacles[count].mesh.position.z = -250;
 	count++;
+
 	// wall
 	ob = new Wall(100, 200, 10);
-	ob.mesh.position.z = 200;
-	ob.mesh.position.y = 110;
 	ob.mesh.castShadow = true;
 	ob.mesh.receiveShadow = true;
+	// ob.mesh.geometry.applyMatrix( new THREE.Matrix4().makeRotationY ( 0.5 ) );
+	ob.mesh.geometry.applyMatrix( new THREE.Matrix4().makeTranslation( 300, 300, 100 ) );
 	obstacles.push(ob);
-	console.log(obstacles[count]);
 	scene.add(obstacles[count].mesh);
 	count++;
+
 	// model
 	var loader = new THREE.JSONLoader(); 
-	console.log(showWireFrame);
 	loader.load( 'models/monster.js', function ( geometry ) {	
 		// var material = materials[ 0 ];
 		monster.mesh = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial({ color: Colors.brown,  wireframe:false }) );
-		monster.mesh.position.set( 200, 20, 0 );
-		monster.mesh.rotation.y = Math.PI/2	;
 		monster.mesh.castShadow = true;
 		var s = 0.15;
-		
-		monster.mesh.scale.set( s, s, s );
+		monster.mesh.scale.set(s, s, s);
+		monster.mesh.geometry.applyMatrix( new THREE.Matrix4().makeTranslation( -350, 300, 10 ) );
 		scene.add( monster.mesh );
-
 	} );
-	console.log(monster);
-	obstacles.push(monster);
+	// console.log(monster);
+	obstacles.push(monster);	
+	sleep(2000);
+
 	count++;
-	//
+
+	// Spehere
 	ob = new Sphere(50);
-	ob.mesh.position.x = -250;
-	ob.mesh.position.y = 60;
 	ob.mesh.castShadow = true;
+	ob.mesh.geometry.applyMatrix( new THREE.Matrix4().makeTranslation( -300, 200, 10 ) );
+	// ob.mesh.position.set(-300,60,0);
 	obstacles.push(ob);
-	scene.add(obstacles[count].mesh);	
+	scene.add(obstacles[count].mesh);
+	obstacles[count].mesh.geometry.verticesNeedUpdate = true;
+
+	// console.log(obstacles[count]);
+	// var mesh = obstacles[count].mesh;
+	// var temp = OBBFromPoints(mesh);
+	// // console.log(temp);
+	// var p = getBoundingBox(temp);
+	// drawLines(p);
+	// console.log(p);
 	count++;
 	// obstacles.push();
 }
 
-function addBBForObstacles(){
-	// var aabb;
-	for(ob = 0; ob < obstacles.length; ob++){
-
-		if(obstacles[ob].mesh.geometry.boundingBox == null)
-			obstacles[ob].mesh.geometry.computeBoundingBox();
-
-		// object.updateMatrixWorld();
-		var aabb = obstacles[ob].mesh.geometry.boundingBox;
-		var bb = new THREE.BoxHelper(obstacles[ob].mesh,0xffffff);
-		bb.visible = false;
-		scene.add(bb);
-		
-		// scene.add(bb);
-		// console.log(aabb);
-	}
+function sleep (time) {
+  return new Promise((resolve) => setTimeout(resolve, time));
 }
 
-function debugTriangleClass() {
-	var p1 = new THREE.Vector3(-150,0,0);
-	var q1 = new THREE.Vector3(150,0,0);
-	var r1 = new THREE.Vector3(0,150,0);
-	var p2 = new THREE.Vector3(-150,0,0);
-	var q2 = new THREE.Vector3(150,3,0);
-	var r2 = new THREE.Vector3(3,1,0);
-	console.log(p1);
-	var result = triangle_triangle_overlap(p1, q1, r1, p2, q2, r2);
-	console.log(result);
+function addBBForObstacles(){
+	// var aabb;
+	for( var ob = 0; ob < obstacles.length; ob++){
+
+		update(obstacles[ob]);
+		var pos = obstacles[ob].mesh.position;
+		// console.log(pos);
+		var mesh = obstacles[ob].mesh;
+		var temp = OBBFromPoints(mesh);
+		// console.log(temp);
+		var p = getBoundingBox(temp);
+		drawLines(p);
+		
+		reset(obstacles[ob], pos);
+	}
 }
 

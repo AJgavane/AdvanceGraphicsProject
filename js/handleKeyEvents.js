@@ -9,6 +9,7 @@ function handleKey(event) {
 		pyramid.mesh.position.z -= 5;
 		
 	}
+	//a
 	if(keyCode == 65){
 		pyramid.mesh.position.x += 5;
 		
@@ -51,5 +52,9 @@ function handleKey(event) {
 	// l
 	if(keyCode == 76){
 		obstacles[2].mesh.rotation.y += 0.05;
+	}
+	//b
+	if(keyCode == 66){
+		showOBB =  true;	
 	}
 }

@@ -19,7 +19,7 @@ Floor = function(l,b) {
 	FloorGeom.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI/2));
 	var FloorMat = new THREE.MeshPhongMaterial(
 		{
-			color: Colors.white, 
+			color: 0x505050, 
 			shading: THREE.FlatShading,
 			// wireframe:true
 		}
@@ -42,4 +42,55 @@ Sphere = function(rad) {
 	var sphereMat = new THREE.MeshLambertMaterial( { color: 0xdddddd, wireframe: showWireFrame } );
 	var	sphereGeom = new THREE.SphereGeometry( rad, 16, 8 );
 	this.mesh = new THREE.Mesh(sphereGeom, sphereMat);
+}
+
+
+function createFloor(l,b) {
+	floor = new Floor(l,b);
+	floor.mesh.receiveShadow = true;
+	scene.add(floor.mesh);
+}
+
+function createTriangle() {
+	triangle = new Triangle(0x303030);
+	scene.add(triangle.mesh);
+	triangle.mesh.geometry.verticesNeedUpdate = true;
+}
+
+function createPyramid() {
+	pyramid = new Pyramid(0x303030);
+	pyramid.mesh.scale.set(70,70,70);
+	pyramid.mesh.position.y = 70;
+	pyramid.mesh.position.z = -250;
+	scene.add(pyramid.mesh);
+}
+
+function drawLines(p) {
+	var material = new THREE.LineBasicMaterial({
+		color: 0x0000ff
+	});
+
+	var geometry = new THREE.Geometry();
+	geometry.vertices.push(
+		p[0],
+		p[1],
+		p[2],
+		p[3],
+		p[0],
+		p[4],
+		p[5],
+		p[6],
+		p[7],
+		p[4],
+		p[3],
+		p[7],
+		p[2],
+		p[6],
+		p[1],
+		p[5],
+		p[0]
+	);
+
+	var line = new THREE.Line( geometry, material );
+	scene.add( line );
 }

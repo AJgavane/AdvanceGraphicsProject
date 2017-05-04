@@ -16,7 +16,6 @@ function OBBFromTriangle(mesh) {
 		var rminusp = new THREE.Vector3();
 		qminusp.subVectors(q,p);
 		rminusp.subVectors(r,p);
-		
 		qminusp.crossVectors(qminusp, rminusp);
 		// qminusp.normalize();
 		Ai = qminusp.length()/2;
@@ -28,7 +27,7 @@ function OBBFromTriangle(mesh) {
 		cxz += (9*mui.x*mui.z + p.x*p.z + q.x*q.z + r.x*r.z) * (Ai/12);
 		cyy += (9*mui.y*mui.y + p.y*p.y + q.y*q.y + r.y*r.y) * (Ai/12);
 		cyz += (9*mui.y*mui.z + p.y*p.z + q.y*q.z + r.y*r.z) * (Ai/12);
-		cxx += (9*mui.z*mui.z + p.z*p.z + q.z*q.z + r.z*r.z) * (Ai/12);
+		czz += (9*mui.z*mui.z + p.z*p.z + q.z*q.z + r.z*r.z) * (Ai/12);
 		// console.log(cxx + " " + cxy + " " + cxz + " " + cyy + " " + cyz + " " + czz);
 	}
 
@@ -46,6 +45,30 @@ function OBBFromTriangle(mesh) {
 	 return buildFromC(C, mesh);
 }
 
+function OBBFromPoints(mesh) {
+	var mu = new THREE.Vector3();
+	var C = new THREE.Matrix3();
+	var points = mesh.geometry.vertices;
+	for(var i = 0; i < points.length; i++){
+		mu.add(points[i]);
+	}
+	mu.divideScalar(points.length);
+	var cxx = 0, cyy = 0, czz = 0, cxy = 0, cxz = 0, cyz = 0;
+	for(var i = 0; i < points.length; i++){
+		var p = points[i];
+		cxx += p.x*p.x - mu.x*mu.x;
+		cxy += p.x*p.y - mu.x*mu.y;
+		cxz += p.x*p.z - mu.x*mu.z;
+		cyy += p.y*p.y - mu.y*mu.y;
+		cyz += p.y*p.z - mu.y*mu.z;
+		czz += p.z*p.z - mu.z*mu.z;
+	}
+	C.set(	cxx, cxy, cxz, 
+			cxy, cyy, cyz,
+			cxz, cyz, czz);
+	 return buildFromC(C, mesh);
+}
+
 function buildFromC(C, mesh){
 	var eigenVector = new THREE.Matrix3();
 	var temp = [[C.elements[0], C.elements[1], C.elements[2]], 
@@ -57,9 +80,6 @@ function buildFromC(C, mesh){
 	var u = new THREE.Vector3(eig.E.x[1][0], eig.E.x[1][1], eig.E.x[1][2]);
 	var f = new THREE.Vector3(eig.E.x[2][0], eig.E.x[2][1], eig.E.x[2][2]);
 	r.normalize(); u.normalize(); f.normalize();
-	// console.log(r);
-	// console.log(u);
-	// console.log(f);
 
 	var rot = new THREE.Matrix3();
 	rot.set(r.x, u.x, f.x,
@@ -101,5 +121,63 @@ function buildFromC(C, mesh){
 	// console.log(max);
 	// console.log(position);
 	// I have rot, position, bbRad for OBB
-	return {rotation: rot, position:position, radius:bbRad};
+	return {rotation:rot, position:position, radius:bbRad, max:max, min: min, points:points};
+}
+
+
+function getBoundingBox(obb){
+	var p = [];
+	var r = new THREE.Vector3(obb.rotation.elements[0], obb.rotation.elements[3], obb.rotation.elements[6]);
+	var u = new THREE.Vector3(obb.rotation.elements[1], obb.rotation.elements[4], obb.rotation.elements[7]);
+	var f = new THREE.Vector3(obb.rotation.elements[2], obb.rotation.elements[5], obb.rotation.elements[8]);
+	var temp = new THREE.Vector3();
+	p[0] = new THREE.Vector3();
+	p[0].addVectors(p[0],obb.position);
+	p[0].addScaledVector(r, -obb.radius.x);
+	p[0].addScaledVector(u, -obb.radius.y);
+	p[0].addScaledVector(f, -obb.radius.z);
+
+	p[1] = new THREE.Vector3();
+	p[1].addVectors(p[1], obb.position);
+	p[1].addScaledVector(r, obb.radius.x);
+	p[1].addScaledVector(u, -obb.radius.y);
+	p[1].addScaledVector(f, -obb.radius.z);
+
+	p[2] = new THREE.Vector3();
+	p[2].add(obb.position);
+	p[2].addScaledVector(r, obb.radius.x);
+	p[2].addScaledVector(u, -obb.radius.y);
+	p[2].addScaledVector(f, obb.radius.z);
+
+	p[3] = new THREE.Vector3();
+	p[3].add(obb.position);
+	p[3].addScaledVector(r, -obb.radius.x);
+	p[3].addScaledVector(u, -obb.radius.y);
+	p[3].addScaledVector(f, obb.radius.z);
+
+	p[4] = new THREE.Vector3();
+	p[4].add(obb.position);
+	p[4].addScaledVector(r, -obb.radius.x);
+	p[4].addScaledVector(u, obb.radius.y);
+	p[4].addScaledVector(f, -obb.radius.z);
+
+	p[5] = new THREE.Vector3();
+	p[5].add(obb.position);
+	p[5].addScaledVector(r, obb.radius.x);
+	p[5].addScaledVector(u, obb.radius.y);
+	p[5].addScaledVector(f, -obb.radius.z);
+
+	p[6] = new THREE.Vector3();
+	p[6].add(obb.position);
+	p[6].addScaledVector(r, obb.radius.x);
+	p[6].addScaledVector(u, obb.radius.y);
+	p[6].addScaledVector(f, obb.radius.z);
+
+	p[7] = new THREE.Vector3();
+	p[7].add(obb.position);
+	p[7].addScaledVector(r, -obb.radius.x);
+	p[7].addScaledVector(u, obb.radius.y);
+	p[7].addScaledVector(f, obb.radius.z);
+	
+	return p;
 }
