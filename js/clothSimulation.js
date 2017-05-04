@@ -53,10 +53,13 @@ function init() {
 	// createTriangle();
 	createFloor(700,700);
 	createObstacles();
+	var callback = function() {var x = OBBFromTriangle(pyramid.mesh); console.log(x);}
+	setTimeout(callback, 2000);
 	// createBall();
 	// debugParticleClass();
 	console.log(ObstaclesColor);
 	debugTriangleClass();
+	
 	loop();
 }
 
@@ -125,6 +128,7 @@ function loop() {
 }
 
 function render() {
+	addBBForObstacles();
 	for(var ob = 0; ob < obstacles.length; ob++){
 		// var collide = checkObstacleCollision(triangle, obstacles[ob]);
 		var collide = checkObstacleCollision(pyramid, obstacles[ob]);
@@ -170,20 +174,20 @@ function checkObstacleCollision(pid, object){
 }
 
 
-function checkCollision(tri1, tri2) {
-	update(tri1);
-	update(tri2);
-	var p1 = tri1.mesh.position;
-	var p2 = tri2.mesh.position;
-	var t1 = tri1.mesh.geometry.vertices;
-	var t2 = tri2.mesh.geometry.vertices;
-	// console.log(t2);
-	var result =  triangle_triangle_overlap(t1[0], t1[1], t1[2], t2[0], t2[1], t2[2]);
-	// console.log(result);
-	reset(tri1, p1);
-	reset(tri2, p2);
-	return result;
-}
+// function checkCollision(tri1, tri2) {
+// 	update(tri1);
+// 	update(tri2);
+// 	var p1 = tri1.mesh.position;
+// 	var p2 = tri2.mesh.position;
+// 	var t1 = tri1.mesh.geometry.vertices;
+// 	var t2 = tri2.mesh.geometry.vertices;
+// 	// console.log(t2);
+// 	var result =  triangle_triangle_overlap(t1[0], t1[1], t1[2], t2[0], t2[1], t2[2]);
+// 	// console.log(result);
+// 	reset(tri1, p1);
+// 	reset(tri2, p2);
+// 	return result;
+// }
 
 
 function update(triangle) {
@@ -268,6 +272,23 @@ function createObstacles() {
 	// obstacles.push();
 }
 
+function addBBForObstacles(){
+	// var aabb;
+	for(ob = 0; ob < obstacles.length; ob++){
+
+		if(obstacles[ob].mesh.geometry.boundingBox == null)
+			obstacles[ob].mesh.geometry.computeBoundingBox();
+
+		// object.updateMatrixWorld();
+		var aabb = obstacles[ob].mesh.geometry.boundingBox;
+		var bb = new THREE.BoxHelper(obstacles[ob].mesh,0xffffff);
+		bb.visible = false;
+		scene.add(bb);
+		
+		// scene.add(bb);
+		// console.log(aabb);
+	}
+}
 
 function debugTriangleClass() {
 	var p1 = new THREE.Vector3(-150,0,0);

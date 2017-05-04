@@ -10,7 +10,8 @@ Triangle = function(val) {
 
 Wall = function(l, b, h) {
 	var geometry = new THREE.CubeGeometry(l,b,h);
-	this.mesh = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({ color: Colors.brown,  wireframe:false }) );
+	var mat = new THREE.MeshLambertMaterial({ color:Colors.wallColor,  wireframe:false }) ;
+	this.mesh = new THREE.Mesh(geometry,mat );
 }
 
 Floor = function(l,b) {
