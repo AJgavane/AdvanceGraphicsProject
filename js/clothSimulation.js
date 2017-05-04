@@ -192,7 +192,7 @@ function createObstacles() {
 	ob = new Wall(100, 200, 10);
 	ob.mesh.castShadow = true;
 	ob.mesh.receiveShadow = true;
-	// ob.mesh.geometry.applyMatrix( new THREE.Matrix4().makeRotationY ( 0.5 ) );
+	ob.mesh.geometry.applyMatrix( new THREE.Matrix4().makeRotationZ ( 01 ) );
 	ob.mesh.geometry.applyMatrix( new THREE.Matrix4().makeTranslation( 300, 300, 100 ) );
 	obstacles.push(ob);
 	scene.add(obstacles[count].mesh);
@@ -209,10 +209,8 @@ function createObstacles() {
 		monster.mesh.geometry.applyMatrix( new THREE.Matrix4().makeTranslation( -350, 300, 10 ) );
 		scene.add( monster.mesh );
 	} );
-	// console.log(monster);
 	obstacles.push(monster);	
 	sleep(2000);
-
 	count++;
 
 	// Spehere
@@ -223,16 +221,7 @@ function createObstacles() {
 	obstacles.push(ob);
 	scene.add(obstacles[count].mesh);
 	obstacles[count].mesh.geometry.verticesNeedUpdate = true;
-
-	// console.log(obstacles[count]);
-	// var mesh = obstacles[count].mesh;
-	// var temp = OBBFromPoints(mesh);
-	// // console.log(temp);
-	// var p = getBoundingBox(temp);
-	// drawLines(p);
-	// console.log(p);
 	count++;
-	// obstacles.push();
 }
 
 function sleep (time) {
@@ -242,7 +231,6 @@ function sleep (time) {
 function addBBForObstacles(){
 	// var aabb;
 	for( var ob = 0; ob < obstacles.length; ob++){
-
 		update(obstacles[ob]);
 		var pos = obstacles[ob].mesh.position;
 		// console.log(pos);
@@ -251,7 +239,7 @@ function addBBForObstacles(){
 		// console.log(temp);
 		var p = getBoundingBox(temp);
 		drawLines(p);
-		
+		obbs[ob] = p;
 		reset(obstacles[ob], pos);
 	}
 }

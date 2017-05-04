@@ -19,7 +19,7 @@ Floor = function(l,b) {
 	FloorGeom.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI/2));
 	var FloorMat = new THREE.MeshPhongMaterial(
 		{
-			color: 0x505050, 
+			color: 0x606060, 
 			shading: THREE.FlatShading,
 			// wireframe:true
 		}

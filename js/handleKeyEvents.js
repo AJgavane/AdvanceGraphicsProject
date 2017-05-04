@@ -39,19 +39,19 @@ function handleKey(event) {
 	}
 	// i
 	if(keyCode == 73){
-		obstacles[2].mesh.rotation.x += 0.05;
+		obstacles[2].mesh.rotation.x += 0.01;
 	}
 	// k
 	if(keyCode == 75){
-		obstacles[2].mesh.rotation.x -= 0.05;
+		obstacles[2].mesh.rotation.x -= 0.01;
 	}
 	//j
 	if(keyCode == 74){
-		obstacles[2].mesh.rotation.y -= 0.05;
+		obstacles[2].mesh.rotation.z -= 0.01;
 	}
 	// l
 	if(keyCode == 76){
-		obstacles[2].mesh.rotation.y += 0.05;
+		obstacles[2].mesh.rotation.z += 0.01;
 	}
 	//b
 	if(keyCode == 66){
