@@ -200,7 +200,7 @@ function createObstacles() {
 
 	// model
 	var loader = new THREE.JSONLoader(); 
-	loader.load( 'models/monster.js', function ( geometry ) {	
+	loader.load( 'https://ajgavane.github.io/AdvanceGraphicsProject/models/monster.js', function ( geometry ) {	
 		// var material = materials[ 0 ];
 		monster.mesh = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial({ color: Colors.brown,  wireframe:false }) );
 		monster.mesh.castShadow = true;
