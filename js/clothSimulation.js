@@ -48,9 +48,9 @@ function createScene() {
 	zFar = 10000;
 	camera = new THREE.PerspectiveCamera(fov, asp, zNear, zFar);
 	scene.fog = new THREE.Fog(0xcce0ff, 500,9050);
-	camera.position.x = 0;
-	camera.position.z = -250;
-	camera.position.y = 100;
+	camera.position.x = 00;
+	camera.position.z = -300;
+	camera.position.y = 500;
 	scene.add(camera);
 
 	renderer = new THREE.WebGLRenderer({alpha: true, antialias:true});
@@ -65,8 +65,7 @@ function createScene() {
 	// controls
 	var controls = new THREE.OrbitControls(camera, renderer.domElement);
 	controls.maxPolarAngle = Math.PI/2;
-	controls.minDistance = 1000;
-	controls.maxDistance = 7500;
+	
 	document.addEventListener("keydown", handleKey, false);
 	window.addEventListener('resize', handleWindowResize, false);
 }
@@ -178,14 +177,13 @@ function render() {
 		// console.log(clothGeom);
 		clothGeom.vertices[p].copy(particles[p].currentPosition);
 	}
-	// clothGeom.applyMatrix(new THREE.Matrix4().makeRotationY(Math.PI/2));
+	// clothGeom.applyMatrix(new THREE.Matrix4().makeRotationY(Math.PI/4));
 	clothGeom.computeFaceNormals;
 	clothGeom.computeVertexNormals;
 	clothGeom.normalsNeedUpdate = true;
 	clothGeom.verticesNeedUpdate = true;
 
 	sphere.position.copy(ballPosition);
-	// clothGeom.makeRotationY(Math.PI/2);
 	// camera.lookAt(scene.position);
 
 	renderer.render(scene, camera);
@@ -211,6 +209,9 @@ function handleKey(event) {
 	}
 	if(keyCode == 69){
 		ballPosition.y -= 5;
+	}
+	if(keyCode == 72){
+		hinge = false;
 	}
 }
 
@@ -238,14 +239,7 @@ function debugParticleClass() {
 	console.log("Xloth update");
 	cloth_exp.update();
 	console.log(cloth_exp.particles[5].currentPosition);
-	// cloth_exp.addForce(force);
-	// cloth_exp.update();
-	// console.log(cloth_exp);
-	// cloth_exp.addForce(new THREE.Vector3(0.0, -2.0, 0.0));
-	// cloth_exp.update();
-	// var temp = cloth_exp.getParticle(2,2);
-	// console.log(temp);
-	// console.log(cloth_exp.particles);
+
 }
 
 
