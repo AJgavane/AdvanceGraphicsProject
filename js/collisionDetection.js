@@ -120,8 +120,10 @@ function loop() {
 }
 
 function render() {
-	if(showOBB == true)
+	if(showOBB == true){
 		addBBForObstacles();
+		showOBB = false;
+	}
 	for(var ob = 0; ob < obstacles.length; ob++){
 		update(pyramid);
 		var intersectsOBB = checkCollisionWithOBB(pyramid, obbs[ob]);
@@ -282,6 +284,8 @@ function addBBForObstacles(){
 		drawLines(p);
 		reset(obstacles[ob], pos);
 	}
+	console.log(showOBB);
+	showOBB = false;
 }
 
 function addOBBs(){
