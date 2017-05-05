@@ -12,6 +12,10 @@ Controls
 'i', 'j', 'k' & 'l' for rotating the complex model used in the demo. 
 You can have camera control over both the demos using mouse.
 
+Demo links:
+Triangle-Triangle Exact collision detection: https://youtu.be/1wycVasJJ0M
+Advance Collision Detection using OBB: https://youtu.be/dZmHgAHTtu8
+
 You can use the [editor on GitHub](https://github.com/AJgavane/AdvanceGraphicsProject/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
 
 Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
