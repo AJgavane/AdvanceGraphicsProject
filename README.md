@@ -1,4 +1,4 @@
-## Welcome to GitHub Pages
+## Advanced Graphics Project
 
 There are two implementation in this project. 1st is the cloth simulation with self-collision detection (extremly slow). The 2nd implementation is advance collision detection using
 OBB. 
