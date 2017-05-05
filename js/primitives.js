@@ -10,7 +10,7 @@ Triangle = function(val) {
 
 Wall = function(l, b, h) {
 	var geometry = new THREE.CubeGeometry(l,b,h);
-	var mat = new THREE.MeshLambertMaterial({ color:Colors.wallColor,  wireframe:false }) ;
+	var mat = new THREE.MeshLambertMaterial({ color:ObstaclesColor[1],  wireframe:false }) ;
 	this.mesh = new THREE.Mesh(geometry,mat );
 }
 
@@ -39,7 +39,7 @@ Pyramid = function(val) {
 }
 
 Sphere = function(rad) {
-	var sphereMat = new THREE.MeshLambertMaterial( { color: 0xdddddd, wireframe: showWireFrame } );
+	var sphereMat = new THREE.MeshLambertMaterial( { color:ObstaclesColor[3], wireframe: showWireFrame } );
 	var	sphereGeom = new THREE.SphereGeometry( rad, 16, 8 );
 	this.mesh = new THREE.Mesh(sphereGeom, sphereMat);
 }
@@ -59,7 +59,7 @@ function createTriangle() {
 
 function createPyramid() {
 	pyramid = new Pyramid(0x303030);
-	pyramid.mesh.scale.set(70,70,70);
+	pyramid.mesh.scale.set(50,50,50);
 	pyramid.mesh.position.y = 70;
 	pyramid.mesh.position.z = -250;
 	scene.add(pyramid.mesh);
@@ -95,65 +95,3 @@ function drawLines(p) {
 	scene.add( line );
 }
 
-function createCloth() {
-	// material
-	var loader = new THREE.TextureLoader();
-	loader.crossOrigin = '';
-	var clothTex = loader.load('https://ajgavane.github.io/AdvanceGraphicsProject/models/cloth.jpg');
-	clothTex.wrapS = clothTex.wrapT = THREE.RepeatWrapping;
-	// clothTex.anisotropy = 16;
-
-	var clothMaterial = new THREE.MeshPhongMaterial(
-		{
-			specular: 0x040404,
-			map     : clothTex,
-			side	: THREE.DoubleSide,
-			alphaTest: 0.5
-		}
-	);
-
-	// geometry
-	console.log(clothFunction);
-	console.log(cloth.width + " " + cloth.height);
-	clothGeom = new THREE.ParametricGeometry(clothFunction, cloth.width, cloth.height);
-	clothGeom.dynamic = true;
-	
-	var uniforms = {
-		texture: 
-			{value: clothTex}
-		};
-	var vertexShader = `
-		#include <packing>
-		unifrom sampler2D texure;
-		varying vec2 v_UV;
-		void main() {
-			vec4 pixel = texture2D(texure, v_UV);
-			if(pixel.a < 0.5) discard;
-			gl_FragData[0] = packDepthToTGBA(gl_FragCoord.z);
-		}
-	`;
-	var fragmentShader = `
-		varying v_UV;
-		void main() {
-			v_UV = 0.65*uv;
-			vec4 mvPosition = modelViewMatirx * vec4(position, 1.0);
-			gl_Position = projectionMatrix * mvPosition;
-		}
-	`;
-
-	// create cloth mesh
-	clothObject = new THREE.Mesh(clothGeom, clothMaterial);
-	clothObject.position.set(0,0,0);
-	clothObject.castShadow = true;
-	clothObject.material.side = THREE.DoubleSide;
-	scene.add(clothObject);
-	clothObject.customDepthMaterial = new THREE.ShaderMaterial(
-		{
-			uniforms		: uniforms,
-			vertexShader 	: vertexShader,
-			fragmentShader 	: fragmentShader,
-			side 			: THREE.DoubleSide
-		}
-	);
-	
-}

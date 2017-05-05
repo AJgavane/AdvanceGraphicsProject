@@ -55,6 +55,10 @@ function handleKey(event) {
 	}
 	//b
 	if(keyCode == 66){
-		showOBB =  true;	
+		if(showOBB ){
+			showOBB = false;
+		} else {
+			showOBB =  true;
+		}	
 	}
 }

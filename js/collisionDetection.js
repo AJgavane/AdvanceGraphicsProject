@@ -57,7 +57,7 @@ function init() {
 	createObstacles();
 	var callback = function() {
 		obbPyramid = OBBFromTriangle(pyramid.mesh); 
-		// addBBForObstacles();
+		addOBBs();
 		loop();
 	}
 	setTimeout(callback, 1000);
@@ -123,15 +123,56 @@ function render() {
 	if(showOBB == true)
 		addBBForObstacles();
 	for(var ob = 0; ob < obstacles.length; ob++){
-		var collide = checkObstacleCollision(pyramid, obstacles[ob]);
-		if(collide) {
-			obstacles[ob].mesh.material.color.setHex(Colors.red);
+		update(pyramid);
+		var intersectsOBB = checkCollisionWithOBB(pyramid, obbs[ob]);
+		reset(pyramid);
+		if(intersectsOBB ){
+			obstacles[ob].mesh.material.transparent = true;
+			obstacles[ob].mesh.material.opacity = 0.7;
+			console.log("entered obstacle: " + ob);
+			var collide = checkObstacleCollision(pyramid, obstacles[ob]);
+			if(collide) {
+				obstacles[ob].mesh.material.color.setHex(Colors.red);
+			} else {
+				obstacles[ob].mesh.material.color.setHex(ObstaclesColor[ob]);
+			}
 		} else {
+			obstacles[ob].mesh.material.opacity = 1;
+			obstacles[ob].mesh.material.transparent = false;
 			obstacles[ob].mesh.material.color.setHex(ObstaclesColor[ob]);
+			if(ob == 0){
+				var collide = checkObstacleCollision(pyramid, obstacles[ob]);
+				if(collide) {
+					obstacles[ob].mesh.material.color.setHex(Colors.red);
+				} else {
+					obstacles[ob].mesh.material.color.setHex(ObstaclesColor[ob]);
+				}
+			}
 		}
 		obstacles[ob].mesh.material.wireframe = showWireFrame;
 	}
 	renderer.render(scene, camera);
+}
+
+function checkCollisionWithOBB(pyramid, obb) {
+	var points = pyramid.mesh.geometry.vertices;
+	for(var p = 0; p < points.length; p++){
+		if( pointObbIntersects(points[p], obb)){
+			return true;
+		}
+	}
+	return false;
+}
+
+function pointObbIntersects(point, obb) {
+	var displacement = new THREE.Vector3();
+	displacement.subVectors(point, obb.position);
+	var x, y, z;
+	x = Math.abs(displacement.dot(obb.r));
+	y = Math.abs(displacement.dot(obb.u));
+	z = Math.abs(displacement.dot(obb.f));
+	// console.log(x + "<=" + obb.radius.x + "  " + y + "<=" + obb.radius.y + " " + z + "<=" + obb.radius.z);
+	return (x <= obb.radius.x && y <= obb.radius.y && z <= obb.radius.z);
 }
 
 function checkObstacleCollision(pid, object){
@@ -182,27 +223,29 @@ function createObstacles() {
 	// Triangle
 	var ob = new Triangle(ObstaclesColor[0]);
 	ob.mesh.castShadow = true;
+	ob.mesh.geometry.applyMatrix( new THREE.Matrix4().makeTranslation( -250,100,-200 ) );
 	obstacles.push(ob);
 	scene.add(obstacles[count].mesh);
-	obstacles[count].mesh.position.set(-250,100,-200);
+	obstacles[count].mesh.geometry.verticesNeedUpdate = true;
 	// obstacles[count].mesh.position.z = -250;
 	count++;
 
 	// wall
-	ob = new Wall(100, 200, 10);
+	ob = new Wall(100, 200, 30);
 	ob.mesh.castShadow = true;
 	ob.mesh.receiveShadow = true;
 	ob.mesh.geometry.applyMatrix( new THREE.Matrix4().makeRotationZ ( 01 ) );
 	ob.mesh.geometry.applyMatrix( new THREE.Matrix4().makeTranslation( 300, 300, 100 ) );
 	obstacles.push(ob);
 	scene.add(obstacles[count].mesh);
+	obstacles[count].mesh.geometry.verticesNeedUpdate = true;
 	count++;
 
 	// model
 	var loader = new THREE.JSONLoader(); 
-	loader.load( 'models/monster.js', function ( geometry ) {	
+	loader.load( 'https://ajgavane.github.io/AdvanceGraphicsProject/models/monster.js', function ( geometry ) {	
 		// var material = materials[ 0 ];
-		monster.mesh = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial({ color: Colors.brown,  wireframe:false }) );
+		monster.mesh = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial({ color:ObstaclesColor[2],  wireframe:false }) );
 		monster.mesh.castShadow = true;
 		var s = 0.15;
 		monster.mesh.scale.set(s, s, s);
@@ -233,14 +276,24 @@ function addBBForObstacles(){
 	for( var ob = 0; ob < obstacles.length; ob++){
 		update(obstacles[ob]);
 		var pos = obstacles[ob].mesh.position;
-		// console.log(pos);
 		var mesh = obstacles[ob].mesh;
 		var temp = OBBFromPoints(mesh);
-		// console.log(temp);
 		var p = getBoundingBox(temp);
 		drawLines(p);
-		obbs[ob] = p;
 		reset(obstacles[ob], pos);
 	}
+}
+
+function addOBBs(){
+	// var aabb;
+	for( var ob = 0; ob < obstacles.length; ob++){
+		update(obstacles[ob]);
+		var pos = obstacles[ob].mesh.position;
+		var mesh = obstacles[ob].mesh;
+		var temp = OBBFromPoints(mesh);
+		obbs[ob] = temp;
+		reset(obstacles[ob], pos);
+	}
+	console.log(obbs);
 }
 

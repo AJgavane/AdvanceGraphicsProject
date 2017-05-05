@@ -121,7 +121,7 @@ function buildFromC(C, mesh){
 	// console.log(max);
 	// console.log(position);
 	// I have rot, position, bbRad for OBB
-	return {rotation:rot, position:position, radius:bbRad, max:max, min: min, points:points};
+	return {rotation:rot, position:position, radius:bbRad, max:max, min: min, r:r, u:u, f:f};
 }
 
 
