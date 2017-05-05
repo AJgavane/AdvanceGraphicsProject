@@ -94,3 +94,66 @@ function drawLines(p) {
 	var line = new THREE.Line( geometry, material );
 	scene.add( line );
 }
+
+function createCloth() {
+	// material
+	var loader = new THREE.TextureLoader();
+	loader.crossOrigin = '';
+	var clothTex = loader.load('https://ajgavane.github.io/AdvanceGraphicsProject/models/cloth.jpg');
+	clothTex.wrapS = clothTex.wrapT = THREE.RepeatWrapping;
+	// clothTex.anisotropy = 16;
+
+	var clothMaterial = new THREE.MeshPhongMaterial(
+		{
+			specular: 0x040404,
+			map     : clothTex,
+			side	: THREE.DoubleSide,
+			alphaTest: 0.5
+		}
+	);
+
+	// geometry
+	console.log(clothFunction);
+	console.log(cloth.width + " " + cloth.height);
+	clothGeom = new THREE.ParametricGeometry(clothFunction, cloth.width, cloth.height);
+	clothGeom.dynamic = true;
+	
+	var uniforms = {
+		texture: 
+			{value: clothTex}
+		};
+	var vertexShader = `
+		#include <packing>
+		unifrom sampler2D texure;
+		varying vec2 v_UV;
+		void main() {
+			vec4 pixel = texture2D(texure, v_UV);
+			if(pixel.a < 0.5) discard;
+			gl_FragData[0] = packDepthToTGBA(gl_FragCoord.z);
+		}
+	`;
+	var fragmentShader = `
+		varying v_UV;
+		void main() {
+			v_UV = 0.65*uv;
+			vec4 mvPosition = modelViewMatirx * vec4(position, 1.0);
+			gl_Position = projectionMatrix * mvPosition;
+		}
+	`;
+
+	// create cloth mesh
+	clothObject = new THREE.Mesh(clothGeom, clothMaterial);
+	clothObject.position.set(0,0,0);
+	clothObject.castShadow = true;
+	clothObject.material.side = THREE.DoubleSide;
+	scene.add(clothObject);
+	clothObject.customDepthMaterial = new THREE.ShaderMaterial(
+		{
+			uniforms		: uniforms,
+			vertexShader 	: vertexShader,
+			fragmentShader 	: fragmentShader,
+			side 			: THREE.DoubleSide
+		}
+	);
+	
+}
