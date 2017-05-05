@@ -49,7 +49,7 @@ function createScene() {
 	camera = new THREE.PerspectiveCamera(fov, asp, zNear, zFar);
 	scene.fog = new THREE.Fog(0xcce0ff, 500,9050);
 	camera.position.x = 00;
-	camera.position.z = -300;
+	camera.position.z = -900;
 	camera.position.y = 500;
 	scene.add(camera);
 
@@ -64,7 +64,7 @@ function createScene() {
 
 	// controls
 	var controls = new THREE.OrbitControls(camera, renderer.domElement);
-	controls.maxPolarAngle = Math.PI/2;
+	// controls.maxPolarAngle = Math.PI/2;
 	
 	document.addEventListener("keydown", handleKey, false);
 	window.addEventListener('resize', handleWindowResize, false);
