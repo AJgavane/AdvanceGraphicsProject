@@ -33,6 +33,7 @@ var ObstaclesColor = {
 	var monster = new THREE.Geometry();
 	var obbPyramid;
 	var showOBB = false;
+	var showOBBTree = false;
 /**/
 
 function handleWindowResize() {
@@ -58,6 +59,7 @@ function init() {
 	var callback = function() {
 		obbPyramid = OBBFromTriangle(pyramid.mesh); 
 		addOBBs();
+		
 		loop();
 	}
 	setTimeout(callback, 1000);
@@ -123,6 +125,10 @@ function render() {
 	if(showOBB == true){
 		addBBForObstacles();
 		showOBB = false;
+	}
+	if(showOBBTree){
+		OBBTree();
+		showOBBTree = false;
 	}
 	for(var ob = 0; ob < obstacles.length; ob++){
 		update(pyramid);
@@ -299,5 +305,22 @@ function addOBBs(){
 		reset(obstacles[ob], pos);
 	}
 	console.log(obbs);
+}
+
+
+function OBBTree() {
+		var ob =2;
+		update(obstacles[ob]);
+		var pos = obstacles[ob].mesh.position;
+		var mesh = obstacles[ob].mesh;
+		var temp = recOBBFromPoints(mesh.geometry.vertices);
+		console.log(obbsT);
+		for(var i =0 ; i <obbsT.length; i++){
+			var p = getBoundingBox(obbsT[i]);
+			drawLines(p);
+		}
+		reset(obstacles[ob], pos);
+		
+
 }
 

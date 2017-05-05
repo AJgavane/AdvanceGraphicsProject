@@ -69,7 +69,9 @@ function OBBFromPoints(mesh) {
 	 return buildFromC(C, mesh);
 }
 
+
 function buildFromC(C, mesh){
+
 	var eigenVector = new THREE.Matrix3();
 	var temp = [[C.elements[0], C.elements[1], C.elements[2]], 
 				[C.elements[3], C.elements[4], C.elements[5]],
@@ -123,6 +125,122 @@ function buildFromC(C, mesh){
 	// I have rot, position, bbRad for OBB
 	return {rotation:rot, position:position, radius:bbRad, max:max, min: min, r:r, u:u, f:f};
 }
+
+var obbsT = [];
+function recOBBFromPoints(points){
+	console.log(points.length);
+	if(points.length > 200) {
+		var P = getPartitionPoint(points);
+		var set1 = generateSet(points, P, 0); // less
+		var set2 = generateSet(points, P, 1); // mmore
+		obbsT.push(recOBBFromPoints(set1));
+		obbsT.push(recOBBFromPoints(set2));
+	}
+	var mu = new THREE.Vector3();
+	var C = new THREE.Matrix3();
+	for(var i = 0; i < points.length; i++){
+		mu.add(points[i]);
+	}
+	mu.divideScalar(points.length);
+	var cxx = 0, cyy = 0, czz = 0, cxy = 0, cxz = 0, cyz = 0;
+	for(var i = 0; i < points.length; i++){
+		var p = points[i];
+		cxx += p.x*p.x - mu.x*mu.x;
+		cxy += p.x*p.y - mu.x*mu.y;
+		cxz += p.x*p.z - mu.x*mu.z;
+		cyy += p.y*p.y - mu.y*mu.y;
+		cyz += p.y*p.z - mu.y*mu.z;
+		czz += p.z*p.z - mu.z*mu.z;
+	}
+	C.set(	cxx, cxy, cxz, 
+			cxy, cyy, cyz,
+			cxz, cyz, czz);
+	 return recBuildFromC(C, points);
+}
+
+function getPartitionPoint(points) {
+	var mu = new THREE.Vector3();
+	for(var i = 0; i < points.length; i++){
+		mu.add(points[i]);
+	}
+	mu.divideScalar(points.length);
+	return mu;
+}
+
+function generateSet(points, p, val) {
+	var set = [];
+	for(var i = 0; i < points.length; i++){
+		if(val == 0){
+			if(points[i].y < p.y){
+				set.push(points[i]);
+			}
+		}
+		if(val == 1) {
+			if(points[i].y >= p.y){
+				set.push(points[i]);
+			}
+		}
+	}
+	return set;
+}
+
+function recBuildFromC(C, points){
+
+	var eigenVector = new THREE.Matrix3();
+	var temp = [[C.elements[0], C.elements[1], C.elements[2]], 
+				[C.elements[3], C.elements[4], C.elements[5]],
+				[C.elements[6], C.elements[7], C.elements[8]]];
+	// console.log(temp);
+	var eig = numeric.eig(temp);
+	var r = new THREE.Vector3(eig.E.x[0][0], eig.E.x[0][1], eig.E.x[0][2]);
+	var u = new THREE.Vector3(eig.E.x[1][0], eig.E.x[1][1], eig.E.x[1][2]);
+	var f = new THREE.Vector3(eig.E.x[2][0], eig.E.x[2][1], eig.E.x[2][2]);
+	r.normalize(); u.normalize(); f.normalize();
+
+	var rot = new THREE.Matrix3();
+	rot.set(r.x, u.x, f.x,
+			r.y, u.y, f.y,
+			r.z, u.z, f.z);
+	// building bb
+	var min = new THREE.Vector3(Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE );
+	var max = new THREE.Vector3(Number.MIN_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
+	
+	for(var p =0; p < points.length; p++){
+		var point = new THREE.Vector3( r.dot(points[p]), u.dot(points[p]), f.dot(points[p]));
+		if(point.x < min.x)
+			min.setX(point.x);
+		if(point.y < min.y)
+			min.setY(point.y);
+		if(point.z < min.z)
+			min.setZ(point.z);
+
+		if(point.x > max.x)
+			max.setX(point.x);
+		if(point.y > max.y)
+			max.setY(point.y);
+		if(point.z > max.z)
+			max.setZ(point.z);
+	}
+	var center = new THREE.Vector3();
+	center.addVectors(min,max);
+	center.divideScalar(2);
+	var position = new THREE.Vector3();
+	position.set(
+			center.x*rot.elements[0] + center.y*rot.elements[1] + center.z*rot.elements[2],
+			center.x*rot.elements[3] + center.y*rot.elements[4] + center.z*rot.elements[5],
+			center.x*rot.elements[6] + center.y*rot.elements[7] + center.z*rot.elements[8]
+		);
+	var bbRad = new THREE.Vector3();
+	bbRad.subVectors(max, min);
+	bbRad.divideScalar(2);
+	// console.log(min);
+	// console.log(max);
+	// console.log(position);
+	// I have rot, position, bbRad for OBB
+	return {rotation:rot, position:position, radius:bbRad, max:max, min: min, r:r, u:u, f:f};
+}
+
+
 
 
 function getBoundingBox(obb){

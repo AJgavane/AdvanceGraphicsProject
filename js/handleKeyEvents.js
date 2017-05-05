@@ -61,4 +61,13 @@ function handleKey(event) {
 			showOBB =  true;
 		}	
 	}
+	//t
+	if(keyCode == 84){
+		console.log('t');
+		if(showOBBTree ){
+			showOBBTree = false;
+		} else {
+			showOBBTree =  true;
+		}
+	}
 }
